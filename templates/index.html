@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>House Price Prediction</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+
+<body class="max-w-96 bg-violet-700 m-auto px-3">
+  <h1 class="text-white text-center text-3xl font-bold mt-5 mb-5">House Price Predictor</h1>
+  <div id="predictionResult" class="px-5 py-4 text-white text-xl text-center selected w-full mt-5 rounded-md my-5 italic font-semibold"></div>
+  <form id="predictionForm" class="w-full">
+    <label for="SqFt" class="text-xl text-white">SqFt:</label>
+    <input class="w-full block rounded p-4 mb-5 mt-2" type="number" id="SqFt" name="SqFt" required placeholder="Enter SqFt">
+
+    <label for="Bedrooms" class="text-xl text-white ">Bedrooms:</label>
+    <select id="Bedrooms" name="Bedrooms" required class="w-full block rounded p-4  mb-5 mt-2">
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+    </select>
+
+    <label for="Bathrooms" class="text-xl text-white ">Bathrooms:</label>
+    <select id="Bathrooms" name="Bathrooms" required class="w-full block rounded p-4 mb-5 mt-2">
+      <option value="1">1</option>
+      <option value="2">2</option>
+    </select>
+
+    <label for="Brick" class="text-xl text-white ">Made with Brick:</label>
+    <div class="w-full flex flex-row rounded mt-2 relative">
+        <div class="w-1/2 mr-2">
+          <label for="BrickYes" class="bg-white cursor-pointer flex items-center justify-center truncate uppercase font-semibold text-lg rounded-3 py-4">Yes</label>
+          <input type="radio" id="BrickYes" name="Brick" value="1" required class="appearance-none"/>
+        </div> 
+        <div class="w-1/2 ml-2">
+          <label for="BrickNo" class="bg-white cursor-pointer flex items-center justify-center truncate uppercase font-semibold text-lg rounded-3 py-4">No</label>
+          <input type="radio" id="BrickNo" name="Brick" value="0" required class="appearance-none" >
+        </div>
+    </div>
+    
+    <label class="text-xl text-white">Neighborhood:</label>
+    <div class="w-full flex flex-wrap rounded mt-0">
+      <div class="w-1/2 pr-2">
+        <input type="radio" id="north" name="Neighborhood" value="north" required class="appearance-none">
+        <label for="north" class="focus:bg-violet-500 bg-white cursor-pointer flex items-center justify-center truncate uppercase font-semibold text-lg rounded-3 py-4">North</label>
+      </div>
+      <div class="w-1/2 pl-2">
+        <input type="radio" id="west" name="Neighborhood" value="west" required class="appearance-none">
+        <label for="west" class="focus:bg-violet-500 bg-white cursor-pointer flex items-center justify-center truncate uppercase font-semibold text-lg rounded-3 py-4">West</label>
+      </div>
+      <div class="w-1/2 pr-2 pb-2">
+        <input type="radio" id="south" name="Neighborhood" value="south" required class="appearance-none">
+        <label for="south" class="focus:bg-violet-500 bg-white cursor-pointer flex items-center justify-center truncate uppercase font-semibold text-lg rounded-3 py-4">South</label>
+      </div>
+      <div class="w-1/2 pl-2 pb-2">
+        <input type="radio" id="east" name="Neighborhood" value="east" required class="appearance-none">
+        <label for="east" class="focus:bg-violet-500 bg-white cursor-pointer flex items-center justify-center truncate uppercase font-semibold text-lg rounded-3 py-4">East</label>
+      </div>
+    </div>
+
+    <button type="button" id="predictButton" class="p-5 text-white text-xl text-center bg-violet-900 w-full mt-5 rounded-md">Predict</button>
+  </form>
+
+  <script>
+    $(document).ready(function() {
+      $("#predictionResult").text("Predicted price will be shown here");
+       
+      $('input[type="radio"]').click(function() {
+        // Remove 'selected' class from labels within the same container
+        $(this).closest('.flex').find('label').removeClass("selected");
+        // Add 'selected' class to the label of the clicked radio button within the same container
+        $(this).siblings('label').addClass("selected");
+      });
+      //whenever a input radio is checked add checked class for that element 
+      $("#predictButton").click(function() {
+        var formData = $("#predictionForm").serialize();
+        $.ajax({
+          type: "POST",
+          url: "/predict",
+          data: formData,
+          success: function(response) {
+            $("#predictionResult").text("Predicted price: $" + response.predicted_price);
+          },
+          error: function(xhr, status, error) {
+            console.error("Request failed");
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

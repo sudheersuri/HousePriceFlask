@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>House Price Prediction</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+
+<body class="violet-dark-bg container">
+  <div id="predictionResult"></div>
+  <form id="predictionForm">
+    <label for="SqFt">SqFt:</label>
+    <br />
+    <input type="number" id="SqFt" name="SqFt" required placeholder="Enter SqFt"><br><br>
+
+    <label for="Bedrooms">Bedrooms:</label>
+    <br />
+    <select id="Bedrooms" name="Bedrooms" required>
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+    </select><br><br>
+
+    <label for="Bathrooms">Bathrooms:</label>
+    <br />
+    <select id="Bathrooms" name="Bathrooms" required>
+      <option value="1">1</option>
+      <option value="2">2</option>
+    </select><br><br>
+
+    <label for="Brick">Made with Brick:</label>
+    <br/>
+    <div class="split">
+      <div class="button">
+        <input type="radio" id="BrickYes" name="Brick" value="1" required>
+        <label for="BrickYes">Yes</label><br>
+      </div>
+      <div class="button">
+        <input type="radio" id="BrickNo" name="Brick" value="0" required>
+        <label for="BrickNo">No</label>
+
+      </div>
+    </div>
+    <br/>
+    <label>Neighborhood:</label><br/>
+<div class="split">
+  <div class="button">
+    <input type="radio" id="north" name="Neighborhood" value="north" required>
+    <label for="north">North</label><br>
+  </div>
+  <div class="button">
+    <input type="radio" id="west" name="Neighborhood" value="west" required>
+    <label for="west">West</label><br>
+  </div>
+</div>
+<div class="split">
+  <div class="button">
+    <input type="radio" id="south" name="Neighborhood" value="south" required>
+    <label for="south">South</label><br>
+  </div>
+  <div class="button">
+    <input type="radio" id="east" name="Neighborhood" value="east" required>
+    <label for="east">East</label><br>
+  </div>
+</div>
+    <button type="button" id="predictButton">Predict</button>
+  </form>
+
+  <script>
+    $(document).ready(function() {
+      //whenever a input radio is checked add checked class for that element 
+      $('input[type="radio"]').click(function() {
+        $('input[type="radio"]').parent().removeClass("checked");
+        $(this).parent().addClass("checked");
+      });
+      $("#predictButton").click(function() {
+        var formData = $("#predictionForm").serialize();
+        
+        $.ajax({
+          type: "POST",
+          url: "/predict",
+          data: formData,
+          success: function(response) {
+            $("#predictionResult").text("Predicted price: $" + response.predicted_price);
+          },
+          error: function(xhr, status, error) {
+            console.error("Request failed");
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
